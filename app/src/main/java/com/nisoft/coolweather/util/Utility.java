@@ -3,9 +3,11 @@ package com.nisoft.coolweather.util;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.nisoft.coolweather.db.City;
 import com.nisoft.coolweather.db.County;
 import com.nisoft.coolweather.db.Province;
+import com.nisoft.coolweather.gson.Weather;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,9 +21,9 @@ public class Utility {
     /**
      * 解析响应数据 省级
      */
-    public static boolean handleProvinceResponse(String response){
-        if (!TextUtils.isEmpty(response)){
-            try{
+    public static boolean handleProvinceResponse(String response) {
+        if (!TextUtils.isEmpty(response)) {
+            try {
                 JSONArray allProvince = new JSONArray(response);
                 for (int i = 0; i < allProvince.length(); i++) {
                     JSONObject object = allProvince.getJSONObject(i);
@@ -30,20 +32,21 @@ public class Utility {
                     province.setProvinceCode(object.getInt("id"));
                     province.save();
                 }
-                Log.e("TAG","true");
+                Log.e("TAG", "true");
                 return true;
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
         return false;
     }
+
     /**
      * 解析响应数据 市级
      */
-    public static boolean handleCityResponse(String response, int provinceId){
-        if (!TextUtils.isEmpty(response)){
-            try{
+    public static boolean handleCityResponse(String response, int provinceId) {
+        if (!TextUtils.isEmpty(response)) {
+            try {
                 JSONArray allCities = new JSONArray(response);
                 for (int i = 0; i < allCities.length(); i++) {
                     JSONObject object = allCities.getJSONObject(i);
@@ -54,7 +57,7 @@ public class Utility {
                     city.save();
                 }
                 return true;
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
@@ -64,9 +67,9 @@ public class Utility {
     /**
      * 解析响应数据 县级
      */
-    public static boolean handleCountyResponse(String response, int cityId){
-        if (!TextUtils.isEmpty(response)){
-            try{
+    public static boolean handleCountyResponse(String response, int cityId) {
+        if (!TextUtils.isEmpty(response)) {
+            try {
                 JSONArray allCounties = new JSONArray(response);
                 for (int i = 0; i < allCounties.length(); i++) {
                     JSONObject object = allCounties.getJSONObject(i);
@@ -77,10 +80,23 @@ public class Utility {
                     county.save();
                 }
                 return true;
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
         return false;
+    }
+
+    public static Weather handleWeatherResponse(String response) {
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent, Weather.class);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+
     }
 }
