@@ -1,6 +1,7 @@
 package com.nisoft.coolweather.util;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.nisoft.coolweather.db.City;
 import com.nisoft.coolweather.db.County;
@@ -18,17 +19,18 @@ public class Utility {
     /**
      * 解析响应数据 省级
      */
-    public static boolean handleProvinceResponce(String responce){
-        if (!TextUtils.isEmpty(responce)){
+    public static boolean handleProvinceResponse(String response){
+        if (!TextUtils.isEmpty(response)){
             try{
-                JSONArray allProvince = new JSONArray(responce);
+                JSONArray allProvince = new JSONArray(response);
                 for (int i = 0; i < allProvince.length(); i++) {
                     JSONObject object = allProvince.getJSONObject(i);
                     Province province = new Province();
                     province.setProvinceName(object.getString("name"));
-                    province.setId(object.getInt("id"));
+                    province.setProvinceCode(object.getInt("id"));
                     province.save();
                 }
+                Log.e("TAG","true");
                 return true;
             }catch (JSONException e){
                 e.printStackTrace();
@@ -39,15 +41,15 @@ public class Utility {
     /**
      * 解析响应数据 市级
      */
-    public static boolean handleCityResponce(String responce,int provinceId){
-        if (!TextUtils.isEmpty(responce)){
+    public static boolean handleCityResponse(String response, int provinceId){
+        if (!TextUtils.isEmpty(response)){
             try{
-                JSONArray allProvince = new JSONArray(responce);
-                for (int i = 0; i < allProvince.length(); i++) {
-                    JSONObject object = allProvince.getJSONObject(i);
+                JSONArray allCities = new JSONArray(response);
+                for (int i = 0; i < allCities.length(); i++) {
+                    JSONObject object = allCities.getJSONObject(i);
                     City city = new City();
                     city.setCityName(object.getString("name"));
-                    city.setId(object.getInt("id"));
+                    city.setCityCode(object.getInt("id"));
                     city.setProvinceId(provinceId);
                     city.save();
                 }
@@ -62,15 +64,15 @@ public class Utility {
     /**
      * 解析响应数据 县级
      */
-    public static boolean handleCountyResponce(String responce,int cityId){
-        if (!TextUtils.isEmpty(responce)){
+    public static boolean handleCountyResponse(String response, int cityId){
+        if (!TextUtils.isEmpty(response)){
             try{
-                JSONArray allProvince = new JSONArray(responce);
-                for (int i = 0; i < allProvince.length(); i++) {
-                    JSONObject object = allProvince.getJSONObject(i);
+                JSONArray allCounties = new JSONArray(response);
+                for (int i = 0; i < allCounties.length(); i++) {
+                    JSONObject object = allCounties.getJSONObject(i);
                     County county = new County();
                     county.setCountyName(object.getString("name"));
-                    county.setWeatherId(object.getInt("weather_id"));
+                    county.setWeatherId(object.getString("weather_id"));
                     county.setCityId(cityId);
                     county.save();
                 }
